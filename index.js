@@ -10,7 +10,9 @@ const storage = multer.diskStorage({
     cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const imageExtension = file.mimetype.split("/");
+    console.log(imageExtension);
+    cb(null, file.fieldname + "." + imageExtension[imageExtension.length - 1]);
   },
 });
 app.use("/uploads", express.static("uploads"));
