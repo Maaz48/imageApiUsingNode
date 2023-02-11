@@ -24,7 +24,7 @@ app.post("/image", upload.single("image"), (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Image was saved to the database successfully.",
-    image: `http://localhost:3000/uploads/${req.file.filename}`,
+    image: `uploads/${req.file.filename}`,
   });
 });
 
