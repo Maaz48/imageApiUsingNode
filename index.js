@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const sharp = require("sharp");
 
 const app = express();
 
@@ -11,7 +12,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const imageExtension = file.mimetype.split("/");
     console.log(imageExtension);
-    cb(null, file.fieldname + "." + "jpg");
+    cb(null, file.fieldname + ".jpg");
   },
 });
 app.use("/uploads", express.static("uploads"));
@@ -21,11 +22,21 @@ const upload = multer({ storage });
 app.use(bodyParser.json());
 
 app.post("/image", upload.single("image"), (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "Image was saved to the database successfully.",
-    image: `uploads/${req.file.filename}`,
-  });
+  sharp(req.file.path)
+    .toFormat("jpg")
+    .jpeg({ quality: 90 })
+    .toFile("./uploads/" + "image", (err, info) => {
+      if (err) {
+        console.log("error...................", err);
+        res.status(500).send(err);
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Image was saved to the database successfully.",
+          image: `uploads/${req.file.filename}`,
+        });
+      }
+    });
 });
 
 app.listen(3000, () => {
